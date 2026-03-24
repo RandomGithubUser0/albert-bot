@@ -15,6 +15,5 @@ Automates Albert.io adaptive skill assignments using Claude vision API and Playw
 ---
 
 ```
+
 ANTHROPIC_API_KEY=your-key-here
-ALBERT_EMAIL=your-email-here
-ALBERT_PASSWORD=your-password-here
