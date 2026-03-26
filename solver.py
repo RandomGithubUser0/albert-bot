@@ -26,7 +26,7 @@ def solveWithScreenshot(screenshot_bytes: bytes, current_type : ProblemType):
                     }
                 },
                 {
-                    "type": "text",
+                    "type": "text", 
                     "text": config.PROMPTS[current_type]
                 }
                 ],
