@@ -24,17 +24,17 @@ SCREENSHOT_DELAY_MS = 1000
 # Prompts
 SYSTEM_PROMPT = """
     You are an answer extraction tool.
-    You ONLY output a JSON array of answer letters.
+    You ONLY output a JSON array of answer letters (lowercase).
     Never explain. Never add text. Only output the array.
     """
 
 GENERAL_PROMPT = """"
     This is a multiple choice question. 
     Respond with ONLY a JSON array of the correct answer letter(s).
-    Examples: ["A"] or ["A", "C"]
+    Examples: ["a"] or ["a", "b"]
     """
 PROMPTS = {
-    ProblemType.MCQ : "This is a multiple choice question with ONE correct answer. Reply with ONLY a JSON array with one letter. Example: [A]",
-    ProblemType.CHOOSEALL : "This is a choose all question with potential multiple correct answers. Reply with ONLY a JSON array with the letter choices. Example: [A, B, C]",
-    ProblemType.FITB : "This is a fill in the blank problem with multiple prompts. Here are the options: UNIMPLEMENTED, RETURN [A]"
+    ProblemType.MCQ : "This is a multiple choice question with ONE correct answer. Reply with ONLY a JSON array with one letter. Example: [a]",
+    ProblemType.CHOOSEALL : "This is a choose all question with potential multiple correct answers. Reply with ONLY a JSON array with the letter choices. Example: [a, b, c]",
+    ProblemType.FITB : "This is a fill in the blank problem with multiple prompts. Here are the options: UNIMPLEMENTED, RETURN [a]"
 }

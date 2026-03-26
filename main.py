@@ -13,13 +13,17 @@ import os
 import config
 
 URLS = [
-    "https://www.albert.io/adaptive/practice/019d218b-8bdc-7d7d-adf3-0caece89689e", 
+    "https://www.albert.io/adaptive/practice/019d26c7-79e4-719b-a661-779d302fa6ed", 
     "https://www.albert.io/adaptive/practice/019d1e63-834f-702d-aa8b-d75b75dccc35",
     "https://www.albert.io/adaptive/skill/8a34b30c-e5e0-4955-89e8-ed6802dda7e5",
     "https://www.albert.io/adaptive/skill/8b61d82e-3aca-4d19-af97-a2c8891b64a1",
 ]
 
-ALPHABET = both_cases_list = list(string.ascii_letters)
+NUMBER_TO_ALPHABET = both_cases_list = list(string.ascii_letters)
+ALPHABET_TO_NUMBER = {}
+
+for number, letter in enumerate(NUMBER_TO_ALPHABET):
+    ALPHABET_TO_NUMBER[letter] = number
 
 def sign_in(page: Page):
     page.goto("https://www.albert.io/log-in")
@@ -64,11 +68,31 @@ def extract_answer_choices(page : Page):
     answer_choices = ""
     for i, option in enumerate(options):
         inner_text = re.sub(r'\s+', ' ', option.inner_text()).strip()
-        answer_choices = answer_choices + " " + f"Option {ALPHABET[i]}: {inner_text}"
+        answer_choices = answer_choices + " " + f"Option {NUMBER_TO_ALPHABET[i]}: {inner_text}"
     return answer_choices
 
 def select_and_submit_answers(page : Page, answer_list):
-    print("test")
+    for letter in answer_list:
+        time.sleep(0.5)
+        to_number = ALPHABET_TO_NUMBER[letter]
+        choice = page.query_selector(f'[data-testid="mcq-option-{to_number}"]')
+        choice.click()
+    submit = page.query_selector(':text("Submit Answer")')
+    time.sleep(0.5)
+    submit.click()
+
+def move_on(page: Page):
+    letsgo_button = page.query_selector(':text("Let\'s go")')
+    next_button = page.query_selector(':text("Next Question")')
+    if letsgo_button:
+        letsgo_button.click()
+    elif next_button:
+        next_button.click()
+
+def albert_is_completed(page: Page):
+    achieved_advanced = page.query_selector(':text("You achieved \\"Advanced\\" on this skill level!")')
+    reached_advanced = page.query_selector(':text("You achieved \\"Advanced\\" on this skill level!")')
+    return (achieved_advanced is not None) or (reached_advanced is not None) 
 
 os.makedirs(config.SCREENSHOTS_DIR, exist_ok=True)
 
@@ -82,23 +106,30 @@ with sync_playwright() as playwright:
 
     for URL in URLS:
         page.goto(URL)
-        time.sleep(2)
+        time.sleep(0.5)
         skip_tour(page)
         time.sleep(0.5)
 
-        screenshot = page.screenshot(path=f"{config.SCREENSHOTS_DIR}/question.png")
-        current_type = get_question_type(page)
-        # while True:
-        #   print(extract_answer_choices(page))
-        #   time.sleep(5)
-        answer = solver.solveWithScreenshot(screenshot, current_type)
+        while not albert_is_completed(page):
+            screenshot = page.screenshot(path=f"{config.SCREENSHOTS_DIR}/question.png")
+            current_type = get_question_type(page)
+            # while True:
+            #   print(extract_answer_choices(page))
+            #   time.sleep(5)
+            answer = solver.solveWithScreenshot(screenshot, current_type)
+            print(answer)
+            response = answer[0].text.strip()
 
-        response = answer.content[0].text.strip()
+            print("response: " + response)        
 
-        print("response: " + response)
+            answers = json.loads(response) 
 
-        answers = json.loads(response) 
+            select_and_submit_answers(page, answers)
 
+            time.sleep(0.5)
 
+            move_on(page)
 
-        time.sleep(1000)
+            time.sleep(1)
+
+        time.sleep(2)
