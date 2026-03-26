@@ -38,3 +38,7 @@ PROMPTS = {
     ProblemType.CHOOSEALL : "This is a choose all question with potential multiple correct answers. Reply with ONLY a JSON array with the letter choices. Example: [a, b, c]",
     ProblemType.FITB : "This is a fill in the blank problem with multiple prompts. Here are the options: UNIMPLEMENTED, RETURN [a]"
 }
+
+LINKS = [
+    
+]

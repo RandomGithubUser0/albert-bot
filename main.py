@@ -13,10 +13,7 @@ import os
 import config
 
 URLS = [
-    "https://www.albert.io/adaptive/practice/019d26c7-79e4-719b-a661-779d302fa6ed", 
-    "https://www.albert.io/adaptive/practice/019d1e63-834f-702d-aa8b-d75b75dccc35",
-    "https://www.albert.io/adaptive/skill/8a34b30c-e5e0-4955-89e8-ed6802dda7e5",
-    "https://www.albert.io/adaptive/skill/8b61d82e-3aca-4d19-af97-a2c8891b64a1",
+    "https://www.albert.io/adaptive/practice/019d27e8-0ef9-78e4-b518-3420d3be6e3d"
 ]
 
 NUMBER_TO_ALPHABET = both_cases_list = list(string.ascii_letters)
