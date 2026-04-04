@@ -8,3 +8,4 @@ class ProblemType(Enum):
     MCQ = auto()
     CHOOSE_ALL = auto()
     FITB = auto()
+    INPUT = auto()

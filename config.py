@@ -17,3 +17,6 @@ SOLVER_CONFIG = {
         "max_tokens": 1024
     }
 }
+
+ALBERT_EMAIL = os.getenv("ALBERT_EMAIL")
+ALBERT_PASSWORD = os.getenv("ALBERT_PASSWORD")
