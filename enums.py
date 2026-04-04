@@ -5,7 +5,7 @@ class SolverType(Enum):
     API = "api"
 
 class ProblemType(Enum):
-    MCQ = auto()
-    CHOOSE_ALL = auto()
-    FITB = auto()
-    INPUT = auto()
+    MCQ = "MCQ"
+    CHOOSE_ALL = "CHOOSE_ALL"
+    FITB = "FITB"
+    INPUT = "INPUT"
