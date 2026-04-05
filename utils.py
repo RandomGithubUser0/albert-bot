@@ -1,6 +1,9 @@
 # utils.py
 import base64
 import httpx
+import re
+import ast
+
 from playwright.sync_api import Browser
 
 def fetch_image_b64(url: str, browser: Browser) -> str:
@@ -27,8 +30,26 @@ def _render_svg_b64(url: str, browser: Browser) -> str:
 
 def clean_inner_text(text: str) -> str:
     """Remove MathJax duplicate text artifacts."""
-    lines = [l for l in text.split("\n") if l.strip()]  # remove empty lines
-    half = len(lines) // 2
-    if lines[:half] == lines[half:]:
-        return " ".join(lines[:half])
-    return " ".join(lines)
+    text = text.replace('\n', ' ')
+    
+    words = text.split()
+    cleaned_words = []
+    for word in words:
+        if not cleaned_words or word != cleaned_words[-1]:
+            cleaned_words.append(word)
+    cleaned_text = " ".join(cleaned_words)
+    
+    cleaned_text = re.sub(r'(\([^)]+\))\s+\1', r'\1', cleaned_text)
+    cleaned_text = re.sub(r'(\d+)\s+\1', r'\1', cleaned_text)
+    
+    return cleaned_text
+
+def parse_llm_answer(response: str) -> list:
+    """
+    Extract the answer from the model's response and convert it to a list.
+    Takes the LAST bracketed expression in case the model adds explanation before the answer.
+    """
+    matches = re.findall(r'\[.*?\]', response)
+    if not matches:
+        raise ValueError(f"No answer found in response: {response}")
+    return ast.literal_eval(matches[-1])

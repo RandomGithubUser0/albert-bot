@@ -19,14 +19,16 @@ with sync_playwright() as playwright:
 
     # main loop
 
+    # TODO finish pipeline
+    # TODO handle FITB
+    # TODO UI maybe??
+
     for url in config.URLS:
-        print('e')
         scraper.setup_page(url)
-        print('reached')
         print(scraper.albert_is_completed())
         while not scraper.albert_is_completed():
             time.sleep(2)
-            result = scraper.parse_mcq()
+            result = scraper.parse_question()
             for item in result:
                 if item["type"] == "text":
                     print(item)

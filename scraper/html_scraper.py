@@ -47,9 +47,11 @@ class Scraper:
             print("Tour button didn't show up, skipping...")
 
     def albert_is_completed(self) -> bool:
-        achieved_advanced = self.page.query_selector(':text("You achieved \\"Advanced\\" on this skill level!")')
-        reached_advanced = self.page.query_selector(':text("You achieved \\"Advanced\\" on this skill level!")')
+        achieved_advanced = self.page.query_selector(queries.ADVANCED_COMPLETION_TEXT)
+        reached_advanced = self.page.query_selector(queries.ADVANCED_COMPLETION_TEXT)
         return (achieved_advanced is not None) or (reached_advanced is not None) 
+
+    # parsers 
 
     def parse_question(self) -> list:
         """Parses current albert.io into a content-based prompt."""
@@ -70,18 +72,7 @@ class Scraper:
     def parse_mcq(self):
         # Extract question
         content = [{"type": "text", "text": "|| Math question: ||"}]
-        question = self.page.query_selector(".question-wrapper__body")
-
-        question_paragraphs = question.query_selector_all(".paragraph")
-        if question_paragraphs:
-            text = "\n".join(utils.clean_inner_text(p.inner_text()) for p in question_paragraphs)
-            content.append({"type": "text", "text": text})
-
-        question_image = question.query_selector(".image-supplement__image")
-        if question_image:
-            src = question_image.get_attribute("src")
-            content.append({"type": "image", "data": utils.fetch_image_b64(src, self.browser)})
-
+        self.append_parsed_question(content)
         content.append({"type": "text", "text": "|| Answer Choices: ||"})
 
         # Extract MCQ choices
@@ -93,11 +84,11 @@ class Scraper:
 
             content.append({"type": "text", "text": f"Answer choice {i}:"})
 
-            option_text = option.query_selector(".paragraph")
+            option_text = option.query_selector(queries.PARAGRAPH)
             if option_text:
                 content.append({ "type": "text", "text": utils.clean_inner_text(option_text.inner_text())})
 
-            option_image = option.query_selector(".image-supplement__image")
+            option_image = option.query_selector(queries.IMAGE_SUPPLEMENT_IMAGE)
             if option_image:
                 src = option_image.get_attribute("src")
                 content.append({"type": "image", "data": utils.fetch_image_b64(src, self.browser)})
@@ -106,11 +97,57 @@ class Scraper:
 
         return content   
 
+    def append_parsed_question(self, content: list):
+        question = self.page.query_selector(queries.QUESTION_WRAPPER_BODY)
 
-        
+        question_paragraphs = question.query_selector_all(queries.PARAGRAPH)
+        if question_paragraphs:
+            text = "\n".join(utils.clean_inner_text(p.inner_text()) for p in question_paragraphs)
+            content.append({"type": "text", "text": text})
+
+        question_image = question.query_selector(queries.IMAGE_SUPPLEMENT_IMAGE)
+        if question_image:
+            src = question_image.get_attribute("src")
+            content.append({"type": "image", "data": utils.fetch_image_b64(src, self.browser)})
+
 
     # def parse_fitb(self):
 
-    # def parse_input(self):
-
     # def extract_fitb_choices(self):
+
+    def parse_input(self):
+        content = [{"type": "text", "text": "|| Math question: ||"}]
+        self.append_parsed_question(content)
+        instructions = self.page.query_selector(queries.FREE_ENTRY_INPUT_PROMPT)
+        if instructions:
+            content.append({"type": "text", "text": f"This is an open ended question. Instructions: {utils.clean_inner_text(instructions.inner_text())}"})
+        return content
+    
+    # selectors
+
+    def input_answers(self, answer_list : list):
+        problem_type = self.get_type()
+        if (problem_type == ProblemType.MCQ) or (problem_type == ProblemType.CHOOSE_ALL):
+            self.input_mcq(answer_list)
+        elif (problem_type == ProblemType.FITB):
+            self.input_fitb(answer_list)
+        elif (problem_type == ProblemType.INPUT):
+            self.input_input(answer_list)
+
+    def input_mcq(self, answer_list: list):
+        for number in answer_list:
+            time.sleep(0.25)
+            choice = self.page.query_selector(f'[data-testid="mcq-option-{number}"]')
+            choice.click()
+        time.sleep(0.25)
+        self.submit()
+
+    def input_fitb(self, answer_list: list):
+        print("input fitb")
+
+    def input_input(self, answer_list: list):
+        print("input input")
+
+    def submit(self):
+        submit = self.page.query_selector(':text("Submit Answer")')
+        submit.click()

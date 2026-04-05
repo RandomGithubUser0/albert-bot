@@ -6,6 +6,13 @@ LOGIN_BUTTON = '[type="submit"]'
 
 TOUR_BUTTON = 'button:has-text("Skip Tour")'
 
+QUESTION_WRAPPER_BODY = '.question-wrapper__body'
+PARAGRAPH = '.paragraph'
+IMAGE_SUPPLEMENT_IMAGE = '.image-supplement__image'
+FREE_ENTRY_INPUT_PROMPT = '.free-entry-input__prompt'
+
+ADVANCED_COMPLETION_TEXT = ':text("You achieved \\"Advanced\\" on this skill level!")'
+
 PROBLEM_TYPE_QUERIES = {
     ProblemType.MCQ: 'legend:has-text("Select one answer")',
     ProblemType.CHOOSE_ALL: 'legend:has-text("Select all that apply")',     
