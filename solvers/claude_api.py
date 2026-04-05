@@ -6,6 +6,6 @@ class ClaudeSolver(BaseSolver):
         """Initialize the Anthropic client and model config."""
         pass
     
-    def solve(self, prompt: str) -> str:
+    def feed(self, content: list) -> str:
         """Send prompt to Claude API and return response."""
         pass

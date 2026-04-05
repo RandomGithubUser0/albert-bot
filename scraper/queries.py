@@ -13,3 +13,5 @@ PROBLEM_TYPE_QUERIES = {
     ProblemType.INPUT: '.free-entry-input__input-v2',
 }
 
+def mcq_string(index : int):
+    return f'[data-testid="mcq-option-{index}"]'
