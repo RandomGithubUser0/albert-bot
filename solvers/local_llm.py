@@ -1,32 +1,26 @@
-from .base import BaseSolver
 from enums import ProblemType
 
-import ollama
+import httpx
 import config
 
-class LocalLLMSolver(BaseSolver):
-    model : str 
+VLLM_URL = "http://localhost:8000/v1/chat/completions"
 
-    def __init__(self, model: str):
-        """Load the local model from the given path."""
-        self.model = model
-    
-    def feed(self, content: list) -> str:
-        response = ollama.chat(
-            model = self.model,
-            messages = [
-                {
-                    "role": "system",
-                    "content": config.SYSTEM_PROMPT
-                },
-                {
-                    "role": "user",
-                    "content": content
-                }
-            ]
-        )
-        return response["message"]["content"]
-    
-    def solve(self, content: list) -> str:
-        response = self.feed(content)
-        return ""
+def feed(model: str, problem_type: ProblemType, content: list) -> str:
+    response = httpx.post(VLLM_URL, json={
+        "model": model,
+        "messages": [
+            {
+                "role": "system",
+                "content": "\n\n".join([
+                    config.SYSTEM_PROMPT_STUD,
+                    config.SYSTEM_PROMPTS[problem_type]
+                ])
+            },
+            {
+                "role": "user",
+                "content": content
+            }
+        ]
+    })
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]["content"]

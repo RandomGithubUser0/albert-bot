@@ -22,3 +22,9 @@ PROBLEM_TYPE_QUERIES = {
 
 def mcq_string(index : int):
     return f'[data-testid="mcq-option-{index}"]'
+
+INPUT_QUESTION_BOX = ".free-entry-input__input-v2"
+SUBMIT_ANSWERS = ':text("Submit Answer")'
+
+MOVE_ONA = ':text("Let\'s go")'
+MOVE_ONB = ':text("Next Question")'

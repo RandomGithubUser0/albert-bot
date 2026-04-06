@@ -1,5 +1,6 @@
 from playwright.sync_api import sync_playwright
 from scraper import html_scraper
+from solvers import local_llm
 
 import os
 import time
@@ -28,8 +29,10 @@ with sync_playwright() as playwright:
         print(scraper.albert_is_completed())
         while not scraper.albert_is_completed():
             time.sleep(2)
-            result = scraper.parse_question()
-            for item in result:
+            problem_type = scraper.get_type()
+            content = scraper.parse_question(problem_type)
+            print(local_llm.feed(config.SOLVER_MODEL, problem_type, content))
+            for item in content:
                 if item["type"] == "text":
                     print(item)
                 else:

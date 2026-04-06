@@ -12,6 +12,13 @@ import string
 import time
 import utils
 
+
+def build_text_block(text: str) -> dict:
+    return {"type": "text", "text": text}
+
+def build_image_block(b64: str) -> dict:
+    return {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}}
+
 class Scraper:
     """test"""
     page : Page 
@@ -53,9 +60,8 @@ class Scraper:
 
     # parsers 
 
-    def parse_question(self) -> list:
+    def parse_question(self, problem_type) -> list:
         """Parses current albert.io into a content-based prompt."""
-        problem_type = self.get_type()
         if (problem_type == ProblemType.MCQ) or (problem_type == ProblemType.CHOOSE_ALL):
             return self.parse_mcq()
         elif (problem_type == ProblemType.FITB):
@@ -71,31 +77,31 @@ class Scraper:
 
     def parse_mcq(self):
         # Extract question
-        content = [{"type": "text", "text": "|| Math question: ||"}]
+        content = [build_text_block("|| Math question: ||")]
         self.append_parsed_question(content)
-        content.append({"type": "text", "text": "|| Answer Choices: ||"})
+        content.append(build_text_block("|| Answer Choices: ||"))
 
         # Extract MCQ choices
-        i = 0 
+        i = 0
         while True:
             option = self.page.query_selector(queries.mcq_string(i))
             if option is None:
                 break
 
-            content.append({"type": "text", "text": f"Answer choice {i}:"})
+            content.append(build_text_block(f"Answer choice {i}:"))
 
             option_text = option.query_selector(queries.PARAGRAPH)
             if option_text:
-                content.append({ "type": "text", "text": utils.clean_inner_text(option_text.inner_text())})
+                content.append(build_text_block(utils.clean_inner_text(option_text.inner_text())))
 
             option_image = option.query_selector(queries.IMAGE_SUPPLEMENT_IMAGE)
             if option_image:
                 src = option_image.get_attribute("src")
-                content.append({"type": "image", "data": utils.fetch_image_b64(src, self.browser)})
+                content.append(build_image_block(utils.fetch_image_b64(src, self.browser)))
 
             i += 1
 
-        return content   
+        return content
 
     def append_parsed_question(self, content: list):
         question = self.page.query_selector(queries.QUESTION_WRAPPER_BODY)
@@ -103,12 +109,12 @@ class Scraper:
         question_paragraphs = question.query_selector_all(queries.PARAGRAPH)
         if question_paragraphs:
             text = "\n".join(utils.clean_inner_text(p.inner_text()) for p in question_paragraphs)
-            content.append({"type": "text", "text": text})
+            content.append(build_text_block(text))
 
         question_image = question.query_selector(queries.IMAGE_SUPPLEMENT_IMAGE)
         if question_image:
             src = question_image.get_attribute("src")
-            content.append({"type": "image", "data": utils.fetch_image_b64(src, self.browser)})
+            content.append(build_image_block(utils.fetch_image_b64(src, self.browser)))
 
 
     # def parse_fitb(self):
@@ -116,11 +122,11 @@ class Scraper:
     # def extract_fitb_choices(self):
 
     def parse_input(self):
-        content = [{"type": "text", "text": "|| Math question: ||"}]
+        content = [build_text_block("|| Math question: ||")]
         self.append_parsed_question(content)
         instructions = self.page.query_selector(queries.FREE_ENTRY_INPUT_PROMPT)
         if instructions:
-            content.append({"type": "text", "text": f"This is an open ended question. Instructions: {utils.clean_inner_text(instructions.inner_text())}"})
+            content.append(build_text_block(f"This is an open ended question. Instructions: {utils.clean_inner_text(instructions.inner_text())}"))
         return content
     
     # selectors
@@ -137,7 +143,7 @@ class Scraper:
     def input_mcq(self, answer_list: list):
         for number in answer_list:
             time.sleep(0.25)
-            choice = self.page.query_selector(f'[data-testid="mcq-option-{number}"]')
+            choice = self.page.query_selector(queries.mcq_string(number))
             choice.click()
         time.sleep(0.25)
         self.submit()
@@ -146,8 +152,17 @@ class Scraper:
         print("input fitb")
 
     def input_input(self, answer_list: list):
-        print("input input")
+        self.page.fill(queries.INPUT_QUESTION_BOX, answer_list[0])   
+        self.submit()
 
     def submit(self):
-        submit = self.page.query_selector(':text("Submit Answer")')
+        submit = self.page.query_selector(queries.SUBMIT_ANSWERS)
         submit.click()
+
+    def move_on(page: Page):
+        letsgo_button = page.query_selector(queries.MOVE_ONA)
+        next_button = page.query_selector(queries.MOVE_ONB)
+        if letsgo_button:
+            letsgo_button.click()
+        elif next_button:
+            next_button.click()
