@@ -1,4 +1,7 @@
 anthropic
+openai
+google-generativeai
+httpx
 playwright
 pillow
 python-dotenv

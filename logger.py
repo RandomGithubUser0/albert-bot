@@ -21,12 +21,12 @@ def new_session(base_log_dir: str) -> str:
     """
     global _session_dir, _stats
 
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    _session_dir = os.path.join(base_log_dir, f"session_{timestamp}")
+    now = datetime.now()
+    _session_dir = os.path.join(base_log_dir, f"session_{now.strftime('%Y-%m-%d_%H-%M-%S')}")
     os.makedirs(_session_dir, exist_ok=True)
 
     _stats = {
-        "start_time": datetime.now().isoformat(),
+        "start_time": now.isoformat(),
         "end_time": None,
         "urls_attempted": 0,
         "links_queued": [],
@@ -48,7 +48,8 @@ def new_session(base_log_dir: str) -> str:
     with open(os.path.join(_session_dir, "stats.json"), "w") as f:
         json.dump(_stats, f, indent=2)
 
-    open(os.path.join(_session_dir, "session.jsonl"), "w").close()
+    with open(os.path.join(_session_dir, "session.jsonl"), "w"):
+        pass
 
     return _session_dir
 
@@ -80,17 +81,13 @@ def log_question(
         for b in content
     ]
 
-    entry = {
-        "timestamp": datetime.now().isoformat(),
-        "url": url,
-        "problem_type": problem_type.value,
-        "content": sanitized_content,
-        "llm_answer": llm_answer,
-        "correct": correct,
-        "error": error,
-    }
-
-    _append_jsonl(entry)
+    _append_jsonl(_make_entry(url, "question",
+        problem_type=problem_type.value,
+        content=sanitized_content,
+        llm_answer=llm_answer,
+        correct=correct,
+        error=error,
+    ))
     _update_question_stats(problem_type, correct)
 
 
@@ -106,12 +103,7 @@ def log_error(url: str, error: str):
     if _session_dir is None:
         return
 
-    _append_jsonl({
-        "timestamp": datetime.now().isoformat(),
-        "url": url,
-        "event": "error",
-        "error": error,
-    })
+    _append_jsonl(_make_entry(url, "error", error=error))
 
 
 def log_new_url(url: str):
@@ -123,11 +115,7 @@ def log_new_url(url: str):
     if _session_dir is None:
         return
 
-    _append_jsonl({
-        "timestamp": datetime.now().isoformat(),
-        "url": url,
-        "event": "url_start",
-    })
+    _append_jsonl(_make_entry(url, "url_start"))
 
     _stats["urls_attempted"] += 1
     if url not in _stats["links_queued"]:
@@ -144,11 +132,7 @@ def log_level_up(url: str):
     if _session_dir is None:
         return
 
-    _append_jsonl({
-        "timestamp": datetime.now().isoformat(),
-        "url": url,
-        "event": "level_up",
-    })
+    _append_jsonl(_make_entry(url, "level_up"))
 
     _stats["level_ups"] += 1
     _flush_stats()
@@ -163,11 +147,7 @@ def log_level_down(url: str):
     if _session_dir is None:
         return
 
-    _append_jsonl({
-        "timestamp": datetime.now().isoformat(),
-        "url": url,
-        "event": "level_down",
-    })
+    _append_jsonl(_make_entry(url, "level_down"))
 
     _stats["level_downs"] += 1
     _flush_stats()
@@ -182,11 +162,7 @@ def log_fallback(url: str):
     if _session_dir is None:
         return
 
-    _append_jsonl({
-        "timestamp": datetime.now().isoformat(),
-        "url": url,
-        "event": "fallback",
-    })
+    _append_jsonl(_make_entry(url, "fallback"))
 
     _stats["fell_back"] += 1
     _flush_stats()
@@ -201,11 +177,7 @@ def log_complete_albert(url: str):
     if _session_dir is None:
         return
 
-    _append_jsonl({
-        "timestamp": datetime.now().isoformat(),
-        "url": url,
-        "event": "albert_completed",
-    })
+    _append_jsonl(_make_entry(url, "albert_completed"))
 
     _stats["alberts_completed"] += 1
     _move_to_completed(url)
@@ -220,11 +192,7 @@ def log_already_completed(url: str):
     if _session_dir is None:
         return
 
-    _append_jsonl({
-        "timestamp": datetime.now().isoformat(),
-        "url": url,
-        "event": "albert_already_completed",
-    })
+    _append_jsonl(_make_entry(url, "albert_already_completed"))
 
     _stats["alberts_already_completed"] += 1
     _move_to_completed(url)
@@ -251,6 +219,10 @@ def _move_to_completed(url: str):
     if url not in _stats["links_completed"]:
         _stats["links_completed"].append(url)
     _flush_stats()
+
+
+def _make_entry(url: str, event: str, **kwargs) -> dict:
+    return {"timestamp": datetime.now().isoformat(), "url": url, "event": event, **kwargs}
 
 
 def _append_jsonl(entry: dict):

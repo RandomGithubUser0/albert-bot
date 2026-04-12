@@ -59,6 +59,7 @@ ALBERT_PASSWORD = os.getenv("ALBERT_PASSWORD")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+LOCAL_LLM_URL = os.getenv("LOCAL_LLM_URL", "http://localhost:1234/v1")
 
 def system_prompt(problem_type: ProblemType) -> str:
     return SYSTEM_PROMPT_STUD + " " + SYSTEM_PROMPTS[problem_type]
@@ -66,6 +67,4 @@ def system_prompt(problem_type: ProblemType) -> str:
 # Logs
 
 LOG_DIR = "logs"
-SESSION_LOG = os.path.join(LOG_DIR, "session.log")
-ERROR_LOG = os.path.join(LOG_DIR, "errors.log")
 SCREENSHOT_DIR = os.path.join(LOG_DIR, "screenshots")
