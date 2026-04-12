@@ -74,7 +74,9 @@ class Scraper(Parser):
             time.sleep(0.1)
 
     def input_input(self, answer_list: list):
-        self.page.fill(queries.INPUT_QUESTION_BOX, str(answer_list[0]))
+        for i, box in enumerate(self.page.query_selector_all(queries.INPUT_QUESTION_BOX)):
+            if i < len(answer_list):
+                box.fill(str(answer_list[i]))
 
     def submit(self):
         submit = self.page.query_selector(queries.SUBMIT_ANSWERS)

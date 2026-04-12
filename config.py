@@ -9,24 +9,6 @@ load_dotenv()
 
 TEXT = """
 
-https://www.albert.io/adaptive/skill/39d8b103-74ca-48c5-b15e-fcff36f1fd9f 
-
-https://www.albert.io/adaptive/skill/2b47b53f-db2d-472a-bd77-acaf816d5879 
-https://www.albert.io/adaptive/skill/2d8f3dd7-e4f6-495a-8697-9bb81c33558a 
-
-https://www.albert.io/adaptive/skill/60b19c73-9d84-4ab5-8eed-36e937c7b21a 
-
-https://www.albert.io/adaptive/skill/59e1ddc6-b035-4f05-aafb-b8c1540d25e6 
-https://www.albert.io/adaptive/skill/d0ac0017-c84d-4440-acfa-657a3f348ab2 
-https://www.albert.io/adaptive/skill/05a0f464-54ba-4668-9a85-e3a64a80abc2 
-
-https://www.albert.io/adaptive/skill/e861f279-8f31-4539-88e5-224c21400911 
-https://www.albert.io/adaptive/skill/a0a6814a-cee7-4fc3-9ddf-f527dd680359 
-https://www.albert.io/adaptive/skill/9782b26a-1cd4-413b-b0aa-74d9d5e1f736 
-https://www.albert.io/adaptive/skill/e8b5240e-ce12-490f-9f08-7ba5b8e94669 
-
-https://www.albert.io/adaptive/skill/1f882f88-a92e-41b5-ba7e-fc3a59625609 
-
 https://www.albert.io/adaptive/skill/d29cf11c-2c17-4352-8655-fabdaeb70f25 
 https://www.albert.io/adaptive/skill/615ad66f-0254-4909-a75a-a64b94b42eb2 
 
@@ -69,9 +51,11 @@ Step 2: For each blank, find which CHOICE number matches that value. The index i
 Step 3: Reply with those indices in order as a list.
 Example: if BLANK0=CHOICE2 and BLANK1=CHOICE0, reply [2, 0].""",
 
-    ProblemType.INPUT: """This is a free response question. Answer precisely as instructed in the question.
-Wrap your answer in brackets.
-Example: [(30, 1)] or [42] or [x = 5]"""
+    ProblemType.INPUT: """This is a free response question with one or more input boxes labeled INPUT 0, INPUT 1, etc.
+Answer each input box in order. Wrap ALL answers together in ONE flat list.
+Never nest lists. Always use this format:
+Single input: [-3]
+Multiple inputs: [-3, 0, 5]"""
 }
 
 # .env

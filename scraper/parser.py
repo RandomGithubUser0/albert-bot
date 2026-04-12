@@ -97,9 +97,9 @@ class Parser:
     def parse_input(self):
         content = [build_text_block("|| Math question: ||")]
         self.append_parsed_question(content)
-        instructions = self.page.query_selector(queries.FREE_ENTRY_INPUT_PROMPT)
-        if instructions:
-            content.append(build_text_block(f"This is an open ended question. Instructions: {utils.clean_inner_text(instructions.inner_text())}"))
+        prompts = self.page.query_selector_all(queries.FREE_ENTRY_INPUT_PROMPT)
+        for i, prompt in enumerate(prompts):
+            content.append(build_text_block(f"INPUT {i}: {utils.clean_inner_text(prompt.inner_text())}"))
         return content
 
     def append_parsed_question(self, content: list):
