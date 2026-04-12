@@ -29,7 +29,11 @@ def new_session(base_log_dir: str) -> str:
         "start_time": datetime.now().isoformat(),
         "end_time": None,
         "urls_attempted": 0,
+        "links_queued": [],
+        "links_completed": [],
         "alberts_completed": 0,
+        "alberts_already_completed": 0,
+        "level_ups": 0,
         "level_downs": 0,
         "fell_back": 0,
         "questions": {
@@ -110,6 +114,46 @@ def log_error(url: str, error: str):
     })
 
 
+def log_new_url(url: str):
+    """
+    Increment urls_attempted and log the start of a new URL attempt.
+
+    Does nothing if new_session() has not been called.
+    """
+    if _session_dir is None:
+        return
+
+    _append_jsonl({
+        "timestamp": datetime.now().isoformat(),
+        "url": url,
+        "event": "url_start",
+    })
+
+    _stats["urls_attempted"] += 1
+    if url not in _stats["links_queued"]:
+        _stats["links_queued"].append(url)
+    _flush_stats()
+
+
+def log_level_up(url: str):
+    """
+    Log that Albert leveled the user up and increment level_ups.
+
+    Does nothing if new_session() has not been called.
+    """
+    if _session_dir is None:
+        return
+
+    _append_jsonl({
+        "timestamp": datetime.now().isoformat(),
+        "url": url,
+        "event": "level_up",
+    })
+
+    _stats["level_ups"] += 1
+    _flush_stats()
+
+
 def log_level_down(url: str):
     """
     Log that Albert leveled the user down and increment level_downs.
@@ -164,7 +208,26 @@ def log_complete_albert(url: str):
     })
 
     _stats["alberts_completed"] += 1
-    _flush_stats()
+    _move_to_completed(url)
+
+
+def log_already_completed(url: str):
+    """
+    Log that an Albert skill was already at Advanced when visited and increment alberts_already_completed.
+
+    Does nothing if new_session() has not been called.
+    """
+    if _session_dir is None:
+        return
+
+    _append_jsonl({
+        "timestamp": datetime.now().isoformat(),
+        "url": url,
+        "event": "albert_already_completed",
+    })
+
+    _stats["alberts_already_completed"] += 1
+    _move_to_completed(url)
 
 
 def close_session():
@@ -181,6 +244,14 @@ def close_session():
 
 
 # --- private helpers ---
+
+def _move_to_completed(url: str):
+    if url in _stats["links_queued"]:
+        _stats["links_queued"].remove(url)
+    if url not in _stats["links_completed"]:
+        _stats["links_completed"].append(url)
+    _flush_stats()
+
 
 def _append_jsonl(entry: dict):
     with open(os.path.join(_session_dir, "session.jsonl"), "a") as f:

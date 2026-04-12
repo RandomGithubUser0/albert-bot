@@ -8,7 +8,7 @@ load_dotenv()
 # URLS
 
 URLS = [
-    "https://www.albert.io/adaptive/practice/019d27eb-f17d-799b-ac65-4af5ee5eb84f"
+    "https://www.albert.io/adaptive/skill/a67e7004-a316-4b15-a4d3-a95d31f0bc53"
 ]
 
 # Solver Config

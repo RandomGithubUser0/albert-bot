@@ -84,6 +84,8 @@ class Scraper(Parser):
             if not button:
                 continue
             button.click()
+            if name == "MOVE_ONB":
+                logger.log_level_up(self.current_url)
             if name == "MOVE_ONC":
                 logger.log_level_down(self.current_url)
             return

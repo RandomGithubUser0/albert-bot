@@ -33,7 +33,7 @@ INPUT_QUESTION_BOX = ".free-entry-input__input-v2"
 SUBMIT_ANSWERS = ':text("Submit Answer")'
 
 MOVE_ON_QUERIES = {
-    "MOVE_ONA": ':text("Let\'s go")',
-    "MOVE_ONB": ':text("Next Question")',
+    "MOVE_ONA": ':text("Next Question")',
+    "MOVE_ONB": ':text("Let\'s go")',
     "MOVE_ONC": ':text("Review Skills")'
 }
