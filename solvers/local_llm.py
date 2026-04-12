@@ -16,7 +16,7 @@ def feed(model : str, problem_type : ProblemType, content : list):
         messages = [
             {
                 "role": "system",
-                "content": config.SYSTEM_PROMPT_STUD + " " + config.SYSTEM_PROMPTS[problem_type]
+                "content": config.system_prompt(problem_type)
             },
             {
                 "role": "user",

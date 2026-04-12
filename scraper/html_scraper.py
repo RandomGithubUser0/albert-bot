@@ -39,8 +39,7 @@ class Scraper(Parser):
     def albert_is_completed(self) -> bool:
         return self.page.query_selector(queries.ADVANCED_COMPLETION_TEXT) is not None
 
-    def input_answers(self, answer_list: list):
-        problem_type = self.get_type()
+    def input_answers(self, answer_list: list, problem_type: ProblemType):
         if problem_type in (ProblemType.MCQ, ProblemType.CHOOSE_ALL):
             self.input_mcq(answer_list)
         elif problem_type == ProblemType.FITB:
@@ -66,16 +65,20 @@ class Scraper(Parser):
             time.sleep(0.1)
 
     def input_input(self, answer_list: list):
-        self.page.fill(queries.INPUT_QUESTION_BOX, answer_list[0])
+        self.page.fill(queries.INPUT_QUESTION_BOX, str(answer_list[0]))
 
     def submit(self):
         submit = self.page.query_selector(queries.SUBMIT_ANSWERS)
-        submit.click()
+        if submit:
+            submit.click()
 
     def move_on(self):
         letsgo_button = self.page.query_selector(queries.MOVE_ONA)
-        next_button = self.page.query_selector(queries.MOVE_ONB)
         if letsgo_button:
             letsgo_button.click()
-        elif next_button:
+            return
+        next_button = self.page.query_selector(queries.MOVE_ONB)
+        if next_button:
             next_button.click()
+            return
+        print("Warning: no move_on button found, may loop on same question")

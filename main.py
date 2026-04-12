@@ -31,6 +31,9 @@ with sync_playwright() as playwright:
         while not scraper.albert_is_completed():
             time.sleep(2)
             problem_type = scraper.get_type()
+            if problem_type is None:
+                print("Warning: could not detect problem type, retrying...")
+                continue
             content = scraper.parse_question(problem_type)
             print(f"\n--- PROMPT ({problem_type}) ---")
             for block in content:
@@ -43,7 +46,7 @@ with sync_playwright() as playwright:
             print(raw)
             result = utils.parse_llm_answer(raw)
             print(result)
-            scraper.input_answers(result)
+            scraper.input_answers(result, problem_type)
             time.sleep(1)
             scraper.move_on()
             

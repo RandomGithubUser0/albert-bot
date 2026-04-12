@@ -6,14 +6,13 @@ import ast
 
 from playwright.sync_api import Browser
 
+_http = httpx.Client(timeout=10)
+
 def fetch_image_b64(url: str, browser: Browser) -> str:
-    """
-    Fetch an image from a URL and return it as a base64-encoded string.
-    """
     if url.endswith(".svg"):
         return _render_svg_b64(url, browser)
-    
-    data = httpx.get(url).content
+
+    data = _http.get(url).content
     return base64.b64encode(data).decode()
 
 

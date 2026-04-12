@@ -25,7 +25,7 @@ def _convert_content(content: list) -> list:
     return result
 
 def feed(model: str, problem_type: ProblemType, content: list) -> str:
-    system = config.SYSTEM_PROMPT_STUD + " " + config.SYSTEM_PROMPTS[problem_type]
+    system = config.system_prompt(problem_type)
     response = client.messages.create(
         model=model,
         max_tokens=4096,

@@ -5,7 +5,7 @@ import config
 client = OpenAI()
 
 def feed(model: str, problem_type: ProblemType, content: list) -> str:
-    system = config.SYSTEM_PROMPT_STUD + " " + config.SYSTEM_PROMPTS[problem_type]
+    system = config.system_prompt(problem_type)
     response = client.chat.completions.create(
         model=model,
         temperature=0,

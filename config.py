@@ -3,10 +3,12 @@ from enums import ProblemType, SolverType
 
 import os
 
+load_dotenv()
+
 # URLS
 
 URLS = [
-    "https://www.albert.io/adaptive/practice/019cc996-ee13-7c08-9ea9-70e481d16e29"
+    "https://www.albert.io/adaptive/skill/619e7f4c-5d4d-473f-8147-56409d101e55"
 ]
 
 # Solver Config
@@ -14,7 +16,7 @@ URLS = [
 SOLVER_TYPE = SolverType.LOCAL
 
 SOLVER_MODELS = {
-    SolverType.LOCAL:  "qwen2.5-vl-7b",
+    SolverType.LOCAL:  "gemma-4-e4b", # "qwen2.5-vl-7b",
     SolverType.CLAUDE: "claude-opus-4-6",
     SolverType.OPENAI: "gpt-4o",
     SolverType.GEMINI: "gemini-2.0-flash",
@@ -29,11 +31,13 @@ Try to keep additional sentences minimal, but if it helps you, feel free to show
 
 SYSTEM_PROMPTS = {
     ProblemType.MCQ: """This is a multiple choice question with one correct answer.
-Reply with the index of the correct answer choice.
-Example: [0]""",
+Answer choices are labeled [0]:, [1]:, [2]:, etc.
+Reply with ONLY the index number of the correct choice.
+Example: [1]""",
 
     ProblemType.CHOOSE_ALL: """This is a multiple choice question where one or more answers may be correct.
-Reply with a list of indices of all correct answer choices.
+Answer choices are labeled [0]:, [1]:, [2]:, etc.
+Reply with ONLY the index numbers of all correct choices as a list.
 Example: [0, 2]""",
 
     ProblemType.FITB: """This is a fill in the blank question.
@@ -49,14 +53,15 @@ Example: [(30, 1)] or [42] or [x = 5]"""
 
 # .env
 
-load_dotenv()
-
 ALBERT_EMAIL = os.getenv("ALBERT_EMAIL")
 ALBERT_PASSWORD = os.getenv("ALBERT_PASSWORD")
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+def system_prompt(problem_type: ProblemType) -> str:
+    return SYSTEM_PROMPT_STUD + " " + SYSTEM_PROMPTS[problem_type]
 
 # Logs
 

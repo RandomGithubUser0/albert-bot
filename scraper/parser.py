@@ -42,7 +42,7 @@ class Parser:
         content.append(build_text_block("|| Answer Choices: ||"))
 
         for i, option in enumerate(self.page.query_selector_all(queries.MCQ_OPTIONS_ALL)):
-            content.append(build_text_block(f"Answer choice {i}:"))
+            content.append(build_text_block(f"[{i}]:"))
 
             option_text = option.query_selector(queries.PARAGRAPH)
             if option_text:
@@ -85,6 +85,8 @@ class Parser:
 
     def append_parsed_question(self, content: list):
         question = self.page.query_selector(queries.QUESTION_WRAPPER_BODY)
+        if not question:
+            return
 
         for p in question.query_selector_all(queries.PARAGRAPH):
             content.append(build_text_block(self.extract_paragraph_content(p)))
