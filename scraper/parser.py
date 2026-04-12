@@ -107,13 +107,33 @@ class Parser:
         if not question:
             return
 
-        for p in question.query_selector_all(queries.PARAGRAPH):
-            content.append(build_text_block(self.extract_paragraph_content(p)))
+        for el in question.query_selector_all(queries.QUESTION_CONTENT_SELECTOR):
+            class_name = el.evaluate("el => el.className")
+            if "paragraph" in class_name:
+                content.append(build_text_block(self.extract_paragraph_content(el)))
+            elif "markdown-table-wrapper" in class_name:
+                content.append(build_text_block(self.extract_table_content(el)))
+            elif "image-supplement__image" in class_name:
+                src = el.get_attribute("src")
+                content.append(build_image_block(utils.fetch_image_b64(src, self.browser)))
 
-        question_image = question.query_selector(queries.IMAGE_SUPPLEMENT_IMAGE)
-        if question_image:
-            src = question_image.get_attribute("src")
-            content.append(build_image_block(utils.fetch_image_b64(src, self.browser)))
+    def extract_table_content(self, wrapper_el) -> str:
+        return self.page.evaluate("""
+            (el) => {
+                const table = el.querySelector('table');
+                if (!table) return '';
+                const rows = [];
+                for (const row of table.querySelectorAll('tr')) {
+                    const cells = Array.from(row.querySelectorAll('th, td')).map(cell => {
+                        const mathScript = cell.querySelector('script[type="math/tex"]');
+                        if (mathScript) return '$' + mathScript.textContent.trim() + '$';
+                        return cell.textContent.trim();
+                    });
+                    rows.push('| ' + cells.join(' | ') + ' |');
+                }
+                return rows.join('\\n');
+            }
+        """, wrapper_el)
 
     def extract_paragraph_content(self, paragraph_element) -> str:
         blocks = self.page.evaluate("""

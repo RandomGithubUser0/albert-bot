@@ -21,6 +21,7 @@ PROBLEM_TYPE_QUERIES = {
     ProblemType.INPUT: '.free-entry-input__input-v2',
 }
 
+QUESTION_CONTENT_SELECTOR = ".paragraph, .markdown-table-wrapper, .image-supplement__image"
 MCQ_OPTIONS_ALL = '[data-testid^="mcq-option-"]'
 FITB_INPUT_PARAGRAPH = '.markdown-renderer-v2.fitb-input-area.fitb-input-area-dropdown .paragraph'
 FITB_MENU_CONTAINER = '.o-menu.fitb-menu-container'

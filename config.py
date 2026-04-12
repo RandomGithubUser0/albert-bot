@@ -8,16 +8,29 @@ load_dotenv()
 # URLS
 
 TEXT = """
-https://www.albert.io/adaptive/skill/e29f28dd-8c52-4d5f-8ad6-c886d873221d
-https://www.albert.io/adaptive/skill/583cb0f3-18be-47b7-8eee-4809f2fb95d2 
-https://www.albert.io/adaptive/skill/3658dbed-e200-4ae5-bed1-66b592720333 
-https://www.albert.io/adaptive/skill/89fadddc-b242-458a-8714-0d36b2819828 
-https://www.albert.io/adaptive/skill/3e154e3b-3dff-4b56-ace5-bdd63b3ef2fe 
-https://www.albert.io/adaptive/skill/ce2b488b-3d9e-4982-a879-e7f60df1aa2c 
-https://www.albert.io/adaptive/skill/ea638c9f-bdea-44fc-9d94-f0a744fb2474 
-https://www.albert.io/adaptive/skill/b038eced-5ef7-4f94-85cb-044b078594e0 
-https://www.albert.io/adaptive/skill/12d49fa7-7fd7-45ea-942f-bbc445aaca2b 
-https://www.albert.io/adaptive/skill/b8924597-d26f-476a-8c2f-c5103c874e69
+
+https://www.albert.io/adaptive/skill/39d8b103-74ca-48c5-b15e-fcff36f1fd9f 
+
+https://www.albert.io/adaptive/skill/2b47b53f-db2d-472a-bd77-acaf816d5879 
+https://www.albert.io/adaptive/skill/2d8f3dd7-e4f6-495a-8697-9bb81c33558a 
+
+https://www.albert.io/adaptive/skill/60b19c73-9d84-4ab5-8eed-36e937c7b21a 
+
+https://www.albert.io/adaptive/skill/59e1ddc6-b035-4f05-aafb-b8c1540d25e6 
+https://www.albert.io/adaptive/skill/d0ac0017-c84d-4440-acfa-657a3f348ab2 
+https://www.albert.io/adaptive/skill/05a0f464-54ba-4668-9a85-e3a64a80abc2 
+
+https://www.albert.io/adaptive/skill/e861f279-8f31-4539-88e5-224c21400911 
+https://www.albert.io/adaptive/skill/a0a6814a-cee7-4fc3-9ddf-f527dd680359 
+https://www.albert.io/adaptive/skill/9782b26a-1cd4-413b-b0aa-74d9d5e1f736 
+https://www.albert.io/adaptive/skill/e8b5240e-ce12-490f-9f08-7ba5b8e94669 
+
+https://www.albert.io/adaptive/skill/1f882f88-a92e-41b5-ba7e-fc3a59625609 
+
+https://www.albert.io/adaptive/skill/d29cf11c-2c17-4352-8655-fabdaeb70f25 
+https://www.albert.io/adaptive/skill/615ad66f-0254-4909-a75a-a64b94b42eb2 
+
+https://www.albert.io/adaptive/skill/95602d73-3917-456d-8617-640c93148bfe 
 """
 URLS = [line.strip() for line in TEXT.splitlines() if line.strip()]
 
