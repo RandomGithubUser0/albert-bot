@@ -25,4 +25,5 @@ def feed(model : str, problem_type : ProblemType, content : list):
         ]
     )
 
-    return response.choices[0].message.content
+    msg = response.choices[0].message
+    return msg.content or getattr(msg, "reasoning_content", None) or ""

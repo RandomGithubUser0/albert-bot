@@ -8,7 +8,7 @@ load_dotenv()
 # URLS
 
 URLS = [
-    "https://www.albert.io/adaptive/skill/619e7f4c-5d4d-473f-8147-56409d101e55"
+    "https://www.albert.io/adaptive/practice/019d1100-a3c6-7102-aab5-a9da52563e6d"
 ]
 
 # Solver Config
@@ -17,7 +17,7 @@ SOLVER_TYPE = SolverType.LOCAL
 
 SOLVER_MODELS = {
     SolverType.LOCAL:  "gemma-4-e4b", # "qwen2.5-vl-7b",
-    SolverType.CLAUDE: "claude-opus-4-6",
+    SolverType.CLAUDE: "claude-haiku-4-5",
     SolverType.OPENAI: "gpt-4o",
     SolverType.GEMINI: "gemini-2.0-flash",
 }
