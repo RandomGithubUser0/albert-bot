@@ -9,6 +9,7 @@ This project is intended **strictly for educational and experimental purposes on
 * It was created as a **personal side project** to explore automation, Playwright, and working with **local and cloud-based large language models (LLMs)**.
 * It is **not intended to be used to gain an unfair advantage**, bypass academic policies, or violate the terms of service of any platform.
 * Users are solely responsible for how they use this software. Misuse may violate school rules or platform policies.
+* Use responsibly and in accordance with albert.io's terms of service.
 
 If you are a student, you should only use this project in ways that align with your institution’s academic integrity guidelines.
 
