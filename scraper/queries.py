@@ -11,7 +11,8 @@ PARAGRAPH = '.paragraph'
 IMAGE_SUPPLEMENT_IMAGE = '.image-supplement__image'
 FREE_ENTRY_INPUT_PROMPT = '.free-entry-input__prompt'
 
-ADVANCED_COMPLETION_TEXT = ':text("You achieved \\"Advanced\\" on this skill level!")'
+ALREADY_COMPLETED_TEXT = ':text("You achieved \\"Advanced\\" on this skill level!")'
+JUST_COMPLETED_TEXT = ':text("You reached the highest level of Advanced for answering 4 of the last 5 correctly!")'
 
 PROBLEM_TYPE_QUERIES = {
     ProblemType.MCQ: 'legend:has-text("Select one answer")',

@@ -1,11 +1,13 @@
 from playwright.sync_api import sync_playwright
 from scraper import html_scraper
 from solvers import solver
+from enums import CompletionStatus
 
 import os
 import time
 import config
 import utils
+import logger
 
 os.makedirs(config.LOG_DIR, exist_ok=True)
 os.makedirs(config.SCREENSHOT_DIR, exist_ok=True)
@@ -25,10 +27,13 @@ with sync_playwright() as playwright:
     # TODO handle FITB
     # TODO UI maybe??
 
+    logger.new_session(config.LOG_DIR)
+
     for url in config.URLS:
         scraper.setup_page(url)
-        print(scraper.albert_is_completed())
-        while not scraper.albert_is_completed():
+        status = scraper.albert_is_completed()
+        print(status)
+        while status == CompletionStatus.NOT_COMPLETED:
             time.sleep(2)
             problem_type = scraper.get_type()
             if problem_type is None:
@@ -48,5 +53,9 @@ with sync_playwright() as playwright:
             print(result)
             scraper.input_answers(result, problem_type)
             time.sleep(1)
+            correct = scraper.get_answer_result()
+            logger.log_question(url, problem_type, content, result, correct)
             scraper.move_on()
-            
+            status = scraper.albert_is_completed()
+        if status == CompletionStatus.JUST_COMPLETED:
+            logger.log_complete_albert(url)

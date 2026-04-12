@@ -1,15 +1,16 @@
 from playwright.sync_api import Browser, Page, TimeoutError
-from enums import ProblemType
+from enums import ProblemType, CompletionStatus
 from scraper import queries
 from scraper.parser import Parser
 
 import config
 import time
-
+import logger
 
 class Scraper(Parser):
     page: Page
     browser: Browser
+    current_url: str
 
     def __init__(self, page: Page, browser: Browser):
         self.page = page
@@ -24,6 +25,7 @@ class Scraper(Parser):
 
     def setup_page(self, url: str):
         self.page.goto(url)
+        self.current_url = url
         try:
             skip = self.page.wait_for_selector(queries.TOUR_BUTTON, timeout=1000)
             skip.click()
@@ -36,8 +38,12 @@ class Scraper(Parser):
                 return problem_type
         return None
 
-    def albert_is_completed(self) -> bool:
-        return self.page.query_selector(queries.ADVANCED_COMPLETION_TEXT) is not None
+    def albert_is_completed(self) -> CompletionStatus:
+        if self.page.query_selector(queries.ALREADY_COMPLETED_TEXT):
+            return CompletionStatus.ALREADY_COMPLETED
+        elif self.page.query_selector(queries.JUST_COMPLETED_TEXT):
+            return CompletionStatus.JUST_COMPLETED
+        return CompletionStatus.NOT_COMPLETED
 
     def input_answers(self, answer_list: list, problem_type: ProblemType):
         if problem_type in (ProblemType.MCQ, ProblemType.CHOOSE_ALL):
@@ -73,12 +79,23 @@ class Scraper(Parser):
             submit.click()
 
     def move_on(self):
-        for name, query in queries.MOVE_ON_QUERIES:
+        for name, query in queries.MOVE_ON_QUERIES.items():
             button = self.page.query_selector(query)
             if not button:
                 continue
             button.click()
+            if name == "MOVE_ONC":
+                logger.log_level_down(self.current_url)
             return
-            #TODO add log
 
         print("Warning: no move_on button found, may loop on same question")
+
+
+    # For logging
+    def get_answer_result(self) -> bool | None:
+        """Returns True if correct, False if incorrect, None if not found."""
+        if self.page.query_selector('.m-banner__card--positive'):
+            return True
+        if self.page.query_selector('.m-banner__card--negative'):
+            return False
+        return None

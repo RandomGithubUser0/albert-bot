@@ -11,3 +11,8 @@ class ProblemType(Enum):
     CHOOSE_ALL = "CHOOSE_ALL"
     FITB = "FITB"
     INPUT = "INPUT"
+
+class CompletionStatus(Enum):
+    NOT_COMPLETED     = "not_completed"
+    JUST_COMPLETED    = "just_completed"
+    ALREADY_COMPLETED = "already_completed"
