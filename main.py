@@ -1,6 +1,6 @@
 from playwright.sync_api import sync_playwright
 from scraper import html_scraper
-from solvers import local_llm
+from solvers import solver
 
 import os
 import time
@@ -39,7 +39,7 @@ with sync_playwright() as playwright:
                 else:
                     print(block)
             print("--- END PROMPT ---\n")
-            raw = local_llm.feed(config.SOLVER_MODEL, problem_type, content)
+            raw = solver.feed(problem_type, content)
             print(raw)
             result = utils.parse_llm_answer(raw)
             print(result)

@@ -47,6 +47,7 @@ class Scraper(Parser):
             self.input_fitb(answer_list)
         elif problem_type == ProblemType.INPUT:
             self.input_input(answer_list)
+        self.submit()
 
     def input_mcq(self, answer_list: list):
         for number in answer_list:
@@ -54,20 +55,18 @@ class Scraper(Parser):
             choice = self.page.query_selector(queries.mcq_string(number))
             choice.click()
         time.sleep(0.25)
-        self.submit()
 
     def input_fitb(self, answer_list: list):
-        toggles = self.page.query_selector_all('.o-menu.fitb-menu-container')
+        toggles = self.page.query_selector_all(queries.FITB_MENU_CONTAINER)
         for i, button, in enumerate(toggles):
             button.click()
             time.sleep(0.2)
-            choice = button.query_selector_all('.o-menu__item')[answer_list[i]]
+            choice = button.query_selector_all(queries.FITB_MENU_ITEM)[answer_list[i]]
             choice.click()
             time.sleep(0.1)
 
     def input_input(self, answer_list: list):
         self.page.fill(queries.INPUT_QUESTION_BOX, answer_list[0])
-        self.submit()
 
     def submit(self):
         submit = self.page.query_selector(queries.SUBMIT_ANSWERS)

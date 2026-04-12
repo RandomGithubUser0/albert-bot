@@ -61,12 +61,12 @@ class Parser:
         paragraph = self.page.query_selector(queries.FITB_INPUT_PARAGRAPH)
         content.append(build_text_block(self.extract_paragraph_content(paragraph)))
 
-        toggles = self.page.query_selector_all('.o-menu.fitb-menu-container')
+        toggles = self.page.query_selector_all(queries.FITB_MENU_CONTAINER)
         for i, button in enumerate(toggles):
             content.append(build_text_block(f"|| BLANK {i} ||"))
             button.click()
             time.sleep(0.2)
-            choices = button.query_selector_all('.o-menu__item')
+            choices = button.query_selector_all(queries.FITB_MENU_ITEM)
             for j, choice in enumerate(choices):
                 p = choice.query_selector(queries.PARAGRAPH) or choice
                 content.append(build_text_block(f"CHOICE{j}: {self.extract_paragraph_content(p)}"))

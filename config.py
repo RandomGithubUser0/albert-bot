@@ -6,13 +6,19 @@ import os
 # URLS
 
 URLS = [
-    "https://www.albert.io/adaptive/practice/019b93ac-d2ba-799b-bf67-9126fa9abd55"
+    "https://www.albert.io/adaptive/practice/019cc996-ee13-7c08-9ea9-70e481d16e29"
 ]
 
 # Solver Config
 
 SOLVER_TYPE = SolverType.LOCAL
-SOLVER_MODEL = "qwen2.5-vl-7b"
+
+SOLVER_MODELS = {
+    SolverType.LOCAL:  "qwen2.5-vl-7b",
+    SolverType.CLAUDE: "claude-opus-4-6",
+    SolverType.OPENAI: "gpt-4o",
+    SolverType.GEMINI: "gemini-2.0-flash",
+}
 
 # Prompts
 
@@ -25,6 +31,10 @@ SYSTEM_PROMPTS = {
     ProblemType.MCQ: """This is a multiple choice question with one correct answer.
 Reply with the index of the correct answer choice.
 Example: [0]""",
+
+    ProblemType.CHOOSE_ALL: """This is a multiple choice question where one or more answers may be correct.
+Reply with a list of indices of all correct answer choices.
+Example: [0, 2]""",
 
     ProblemType.FITB: """This is a fill in the blank question.
 Step 1: Solve the math and find the value for each blank.
@@ -43,6 +53,10 @@ load_dotenv()
 
 ALBERT_EMAIL = os.getenv("ALBERT_EMAIL")
 ALBERT_PASSWORD = os.getenv("ALBERT_PASSWORD")
+
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Logs
 

@@ -2,7 +2,9 @@ from enum import Enum, auto
 
 class SolverType(Enum):
     LOCAL = "local"
-    API = "api"
+    CLAUDE = "claude"
+    OPENAI = "openai"
+    GEMINI = "gemini"
 
 class ProblemType(Enum):
     MCQ = "MCQ"
