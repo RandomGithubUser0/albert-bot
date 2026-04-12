@@ -6,30 +6,31 @@ import os
 # URLS
 
 URLS = [
-    "https://www.albert.io/adaptive/practice/019d5144-5d17-7941-a29d-304ec5423489"
+    "https://www.albert.io/adaptive/practice/019b93ac-d2ba-799b-bf67-9126fa9abd55"
 ]
 
 # Solver Config
 
 SOLVER_TYPE = SolverType.LOCAL
-SOLVER_MODEL = "gemma4:26b"
+SOLVER_MODEL = "qwen2.5-vl-7b"
 
 # Prompts
 
 SYSTEM_PROMPT_STUD = """You are a math problem solver. You will be given a math question and must answer it correctly.
-Always wrap your final answer in square brackets [].
-Do not explain your reasoning. Only output the answer in brackets, nothing else."""
+Always wrap your final answer in square brackets []. Example: [2] 
+Try to keep additional sentences minimal, but if it helps you, feel free to show steps. 
+"""
 
 SYSTEM_PROMPTS = {
     ProblemType.MCQ: """This is a multiple choice question with one correct answer.
 Reply with the index of the correct answer choice.
-Example: [2]""",
+Example: [0]""",
 
-    ProblemType.CHOOSE_ALL: """This is a multiple choice question where multiple answers may be correct.
-Reply with the indices of all correct answer choices, comma separated.
-Example: [0, 1, 3]""",
-
-    ProblemType.FITB: "test",
+    ProblemType.FITB: """This is a fill in the blank question.
+Step 1: Solve the math and find the value for each blank.
+Step 2: For each blank, find which CHOICE number matches that value. The index is the number after "CHOICE", starting from 0.
+Step 3: Reply with those indices in order as a list.
+Example: if BLANK0=CHOICE2 and BLANK1=CHOICE0, reply [2, 0].""",
 
     ProblemType.INPUT: """This is a free response question. Answer precisely as instructed in the question.
 Wrap your answer in brackets.

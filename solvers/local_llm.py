@@ -1,26 +1,28 @@
 from enums import ProblemType
+from openai import OpenAI
 
-import httpx
 import config
 
-VLLM_URL = "http://localhost:8000/v1/chat/completions"
+client = OpenAI(
+    base_url = "http://localhost:1234/v1",
+    api_key = "lm studio 67 lmao", # doesn't matter
+)
 
-def feed(model: str, problem_type: ProblemType, content: list) -> str:
-    response = httpx.post(VLLM_URL, json={
-        "model": model,
-        "messages": [
+def feed(model : str, problem_type : ProblemType, content : list):
+    response = client.chat.completions.create(
+        model = model,  # must match exactly what LM Studio shows
+        temperature = 0,
+        max_tokens = 16384,
+        messages = [
             {
                 "role": "system",
-                "content": "\n\n".join([
-                    config.SYSTEM_PROMPT_STUD,
-                    config.SYSTEM_PROMPTS[problem_type]
-                ])
+                "content": config.SYSTEM_PROMPT_STUD + " " + config.SYSTEM_PROMPTS[problem_type]
             },
             {
                 "role": "user",
                 "content": content
             }
         ]
-    })
-    response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
+    )
+
+    return response.choices[0].message.content

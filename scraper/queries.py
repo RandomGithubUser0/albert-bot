@@ -20,6 +20,9 @@ PROBLEM_TYPE_QUERIES = {
     ProblemType.INPUT: '.free-entry-input__input-v2',
 }
 
+MCQ_OPTIONS_ALL = '[data-testid^="mcq-option-"]'
+FITB_INPUT_PARAGRAPH = '.markdown-renderer-v2.fitb-input-area.fitb-input-area-dropdown .paragraph'
+
 def mcq_string(index : int):
     return f'[data-testid="mcq-option-{index}"]'
 

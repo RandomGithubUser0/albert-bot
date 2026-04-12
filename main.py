@@ -5,6 +5,7 @@ from solvers import local_llm
 import os
 import time
 import config
+import utils
 
 os.makedirs(config.LOG_DIR, exist_ok=True)
 os.makedirs(config.SCREENSHOT_DIR, exist_ok=True)
@@ -31,10 +32,18 @@ with sync_playwright() as playwright:
             time.sleep(2)
             problem_type = scraper.get_type()
             content = scraper.parse_question(problem_type)
-            print(local_llm.feed(config.SOLVER_MODEL, problem_type, content))
-            for item in content:
-                if item["type"] == "text":
-                    print(item)
+            print(f"\n--- PROMPT ({problem_type}) ---")
+            for block in content:
+                if block["type"] == "image_url":
+                    print({"type": "image_url", "url": block["image_url"]["url"][:40] + "..."})
                 else:
-                    print({"type": "image", "data": item["data"][:30] + "..."})  # truncate b64
+                    print(block)
+            print("--- END PROMPT ---\n")
+            raw = local_llm.feed(config.SOLVER_MODEL, problem_type, content)
+            print(raw)
+            result = utils.parse_llm_answer(raw)
+            print(result)
+            scraper.input_answers(result)
+            time.sleep(1)
+            scraper.move_on()
             
