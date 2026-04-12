@@ -12,7 +12,7 @@ def feed(model : str, problem_type : ProblemType, content : list):
     response = client.chat.completions.create(
         model = model,  # must match exactly what LM Studio shows
         temperature = 0,
-        max_tokens = 4096,
+        max_tokens = 8192,
         messages = [
             {
                 "role": "system",

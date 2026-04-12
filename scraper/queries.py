@@ -26,6 +26,8 @@ FITB_INPUT_PARAGRAPH = '.markdown-renderer-v2.fitb-input-area.fitb-input-area-dr
 FITB_MENU_CONTAINER = '.o-menu.fitb-menu-container'
 FITB_MENU_ITEM = '.o-menu__item'
 
+FINISH_BUTTON = ':text("Finish")'
+
 def mcq_string(index : int):
     return f'[data-testid="mcq-option-{index}"]'
 

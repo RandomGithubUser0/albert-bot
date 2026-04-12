@@ -7,9 +7,19 @@ load_dotenv()
 
 # URLS
 
-URLS = [
-    "https://www.albert.io/adaptive/skill/b8e0fead-7e71-4b27-b633-ed11e82db4f1"
-]
+TEXT = """
+https://www.albert.io/adaptive/skill/e29f28dd-8c52-4d5f-8ad6-c886d873221d
+https://www.albert.io/adaptive/skill/583cb0f3-18be-47b7-8eee-4809f2fb95d2 
+https://www.albert.io/adaptive/skill/3658dbed-e200-4ae5-bed1-66b592720333 
+https://www.albert.io/adaptive/skill/89fadddc-b242-458a-8714-0d36b2819828 
+https://www.albert.io/adaptive/skill/3e154e3b-3dff-4b56-ace5-bdd63b3ef2fe 
+https://www.albert.io/adaptive/skill/ce2b488b-3d9e-4982-a879-e7f60df1aa2c 
+https://www.albert.io/adaptive/skill/ea638c9f-bdea-44fc-9d94-f0a744fb2474 
+https://www.albert.io/adaptive/skill/b038eced-5ef7-4f94-85cb-044b078594e0 
+https://www.albert.io/adaptive/skill/12d49fa7-7fd7-45ea-942f-bbc445aaca2b 
+https://www.albert.io/adaptive/skill/b8924597-d26f-476a-8c2f-c5103c874e69
+"""
+URLS = [line.strip() for line in TEXT.splitlines() if line.strip()]
 
 # Solver Config
 

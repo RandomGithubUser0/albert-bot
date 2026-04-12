@@ -46,6 +46,9 @@ class Scraper(Parser):
         return CompletionStatus.NOT_COMPLETED
 
     def input_answers(self, answer_list: list, problem_type: ProblemType):
+        finish_prompt = self.page.query_selector(queries.FINISH_BUTTON)
+        if finish_prompt:
+            finish_prompt.click()
         if problem_type in (ProblemType.MCQ, ProblemType.CHOOSE_ALL):
             self.input_mcq(answer_list)
         elif problem_type == ProblemType.FITB:
