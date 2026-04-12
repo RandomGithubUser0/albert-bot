@@ -31,5 +31,8 @@ def mcq_string(index : int):
 INPUT_QUESTION_BOX = ".free-entry-input__input-v2"
 SUBMIT_ANSWERS = ':text("Submit Answer")'
 
-MOVE_ONA = ':text("Let\'s go")'
-MOVE_ONB = ':text("Next Question")'
+MOVE_ON_QUERIES = {
+    "MOVE_ONA": ':text("Let\'s go")',
+    "MOVE_ONB": ':text("Next Question")',
+    "MOVE_ONC": ':text("Review Skills")'
+}

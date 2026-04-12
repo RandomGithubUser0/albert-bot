@@ -73,12 +73,12 @@ class Scraper(Parser):
             submit.click()
 
     def move_on(self):
-        letsgo_button = self.page.query_selector(queries.MOVE_ONA)
-        if letsgo_button:
-            letsgo_button.click()
+        for name, query in queries.MOVE_ON_QUERIES:
+            button = self.page.query_selector(query)
+            if not button:
+                continue
+            button.click()
             return
-        next_button = self.page.query_selector(queries.MOVE_ONB)
-        if next_button:
-            next_button.click()
-            return
+            #TODO add log
+
         print("Warning: no move_on button found, may loop on same question")
