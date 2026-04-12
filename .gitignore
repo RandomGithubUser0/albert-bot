@@ -218,3 +218,6 @@ __marimo__/
 
 # Session
 session.json
+
+# Logs
+logs/

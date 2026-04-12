@@ -22,6 +22,22 @@ def merge_blocks_to_text(blocks: list) -> str:
         return result
     return re.sub(r"<BLANK>", _numbered, text)
 
+def renumber_blanks(blocks: list) -> list:
+    """Renumber <BLANKn> markers consecutively across multiple text blocks."""
+    counter = 0
+    result = []
+    for block in blocks:
+        if block.get("type") == "text":
+            def _replace(_):
+                nonlocal counter
+                r = f"<BLANK{counter}>"
+                counter += 1
+                return r
+            result.append(build_text_block(re.sub(r"<BLANK\d+>", _replace, block["text"])))
+        else:
+            result.append(block)
+    return result
+
 
 class Parser:
     page: Page
@@ -58,8 +74,11 @@ class Parser:
     def parse_fitb(self):
         content = [build_text_block("|| Math problem: ||")]
         self.append_parsed_question(content)
-        paragraph = self.page.query_selector(queries.FITB_INPUT_PARAGRAPH)
-        content.append(build_text_block(self.extract_paragraph_content(paragraph)))
+        para_blocks = [
+            build_text_block(self.extract_paragraph_content(p))
+            for p in self.page.query_selector_all(queries.FITB_INPUT_PARAGRAPH)
+        ]
+        content.extend(renumber_blanks(para_blocks))
 
         toggles = self.page.query_selector_all(queries.FITB_MENU_CONTAINER)
         for i, button in enumerate(toggles):

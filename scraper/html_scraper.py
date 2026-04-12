@@ -84,14 +84,13 @@ class Scraper(Parser):
             if not button:
                 continue
             button.click()
-            if name == "MOVE_ONB":
+            if name == "MOVE_ONA":
                 logger.log_level_up(self.current_url)
-            elif name == "MOVE_ONC":
+            elif name == "MOVE_ONB":
                 logger.log_level_down(self.current_url)
             return
 
         print("Warning: no move_on button found, may loop on same question")
-
 
     # For logging
     def get_answer_result(self) -> bool | None:

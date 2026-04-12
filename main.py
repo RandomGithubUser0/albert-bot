@@ -42,7 +42,7 @@ with sync_playwright() as playwright:
         print(status)
 
         while status == CompletionStatus.NOT_COMPLETED:
-            time.sleep(2)
+            time.sleep(1)
 
             problem_type = scraper.get_type()
             if problem_type is None:
