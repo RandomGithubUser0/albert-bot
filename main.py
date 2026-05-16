@@ -41,6 +41,7 @@ with sync_playwright() as playwright:
         status = scraper.albert_is_completed()
         print(status)
 
+        move_on_failures = 0
         while status == CompletionStatus.NOT_COMPLETED:
             time.sleep(1)
 
@@ -83,7 +84,24 @@ with sync_playwright() as playwright:
             logger.log_question(url, problem_type, content, result, correct,
                                 error="fallback" if fell_back else None)
 
-            scraper.move_on()
+            if scraper.move_on():
+                move_on_failures = 0
+            else:
+                move_on_failures += 1
+                if move_on_failures >= 2:
+                    print("Warning: move_on failed twice, submitting backup answer...")
+                    backup = _fallback_answer(problem_type, content)
+                    try:
+                        scraper.input_answers(backup, problem_type)
+                    except Exception as e:
+                        print(f"Backup input error: {e}")
+                    time.sleep(1)
+                    if scraper.move_on():
+                        move_on_failures = 0
+                    else:
+                        print("CRITICAL: Cannot advance past question after backup answer. Terminating.")
+                        break
+
             status = scraper.albert_is_completed()
 
         if status == CompletionStatus.JUST_COMPLETED:

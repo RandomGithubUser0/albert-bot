@@ -80,6 +80,7 @@ def parse_llm_answer(response: str) -> list:
     Extract the answer from the model's response and convert it to a list.
 
     Handles these output patterns:
+      \\boxed{3}          → [3]         LaTeX boxed answer (checked first)
       [2.5, -1]          → [2.5, -1]   flat list (ideal)
       [[-3], [-2], [0]]  → [-3, -2, 0] nested single-value lists
       [2.5]\\n[-1]        → [2.5, -1]   consecutive single-value brackets
@@ -88,6 +89,22 @@ def parse_llm_answer(response: str) -> list:
     consecutive single-value brackets separated by blank lines, only the last
     group is used.
     """
+    boxed_matches = re.findall(r'\\boxed\{([^}]+)\}', response)
+    if boxed_matches:
+        content = boxed_matches[-1].strip()
+        if content.startswith('['):
+            try:
+                val = ast.literal_eval(_quote_bare_words(content))
+                if isinstance(val, list):
+                    return val
+            except (ValueError, SyntaxError):
+                pass
+        try:
+            val = ast.literal_eval(content)
+            return [val] if not isinstance(val, list) else val
+        except (ValueError, SyntaxError):
+            pass
+
     raw = _all_bracket_exprs(response)
     if not raw:
         raise ValueError(f"No answer found in response: {response}")

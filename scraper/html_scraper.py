@@ -83,7 +83,7 @@ class Scraper(Parser):
         if submit:
             submit.click()
 
-    def move_on(self):
+    def move_on(self) -> bool:
         for name, query in queries.MOVE_ON_QUERIES.items():
             button = self.page.query_selector(query)
             if not button:
@@ -93,9 +93,10 @@ class Scraper(Parser):
                 logger.log_level_up(self.current_url)
             elif name == "MOVE_ONB":
                 logger.log_level_down(self.current_url)
-            return
+            return True
 
         print("Warning: no move_on button found, may loop on same question")
+        return False
 
     # For logging
     def get_answer_result(self) -> bool | None:
