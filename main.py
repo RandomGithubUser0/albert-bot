@@ -42,13 +42,21 @@ with sync_playwright() as playwright:
         print(status)
 
         move_on_failures = 0
+        type_failures = 0
         while status == CompletionStatus.NOT_COMPLETED:
             time.sleep(1)
 
             problem_type = scraper.get_type()
             if problem_type is None:
-                print("Warning: could not detect problem type, retrying...")
+                type_failures += 1
+                if type_failures >= 3:
+                    print("Warning: could not detect problem type after 3 tries, attempting move_on to unstick...")
+                    scraper.move_on()
+                    type_failures = 0
+                else:
+                    print("Warning: could not detect problem type, retrying...")
                 continue
+            type_failures = 0
 
             content = scraper.parse_question(problem_type)
             print(f"\n--- PROMPT ({problem_type}) ---")
