@@ -52,6 +52,18 @@ class Parser:
             return self.parse_input()
         return []
 
+    def _append_content_blocks(self, content: list, container):
+        """Append paragraph, table, and image blocks from container in DOM order."""
+        for el in container.query_selector_all(queries.QUESTION_CONTENT_SELECTOR):
+            class_name = el.evaluate("el => el.className")
+            if "paragraph" in class_name:
+                content.append(build_text_block(self.extract_paragraph_content(el)))
+            elif "markdown-table-wrapper" in class_name:
+                content.append(build_text_block(self.extract_table_content(el)))
+            elif "image-supplement__image" in class_name:
+                src = el.get_attribute("src")
+                content.append(build_image_block(utils.fetch_image_b64(src, self.browser)))
+
     def parse_mcq(self):
         content = [build_text_block("|| Math question: ||")]
         self.append_parsed_question(content)
@@ -59,15 +71,7 @@ class Parser:
 
         for i, option in enumerate(self.page.query_selector_all(queries.MCQ_OPTIONS_ALL)):
             content.append(build_text_block(f"[{i}]:"))
-
-            option_text = option.query_selector(queries.PARAGRAPH)
-            if option_text:
-                content.append(build_text_block(self.extract_paragraph_content(option_text)))
-
-            option_image = option.query_selector(queries.IMAGE_SUPPLEMENT_IMAGE)
-            if option_image:
-                src = option_image.get_attribute("src")
-                content.append(build_image_block(utils.fetch_image_b64(src, self.browser)))
+            self._append_content_blocks(content, option)
 
         return content
 
@@ -106,16 +110,7 @@ class Parser:
         question = self.page.query_selector(queries.QUESTION_WRAPPER_BODY)
         if not question:
             return
-
-        for el in question.query_selector_all(queries.QUESTION_CONTENT_SELECTOR):
-            class_name = el.evaluate("el => el.className")
-            if "paragraph" in class_name:
-                content.append(build_text_block(self.extract_paragraph_content(el)))
-            elif "markdown-table-wrapper" in class_name:
-                content.append(build_text_block(self.extract_table_content(el)))
-            elif "image-supplement__image" in class_name:
-                src = el.get_attribute("src")
-                content.append(build_image_block(utils.fetch_image_b64(src, self.browser)))
+        self._append_content_blocks(content, question)
 
     def extract_table_content(self, wrapper_el) -> str:
         return self.page.evaluate("""

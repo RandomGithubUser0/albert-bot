@@ -8,11 +8,7 @@ load_dotenv()
 # URLS
 
 TEXT = """
-
-https://www.albert.io/adaptive/skill/d29cf11c-2c17-4352-8655-fabdaeb70f25 
-https://www.albert.io/adaptive/skill/615ad66f-0254-4909-a75a-a64b94b42eb2 
-
-https://www.albert.io/adaptive/skill/95602d73-3917-456d-8617-640c93148bfe 
+https://www.albert.io/adaptive/skill/4f40c10f-8c65-4654-86a7-e5ae50ad2de0
 """
 URLS = [line.strip() for line in TEXT.splitlines() if line.strip()]
 
