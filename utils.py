@@ -54,7 +54,7 @@ def _quote_bare_words(expr: str) -> str:
     )
 
 def _all_bracket_exprs(s: str) -> list:
-    """Return all top-level balanced [...] expressions in s, in order."""
+    """Return all top-level balanced [...] expressions as (expr, start, end) tuples."""
     results = []
     i = 0
     while i < len(s):
@@ -67,7 +67,7 @@ def _all_bracket_exprs(s: str) -> list:
                 elif s[i] == ']':
                     depth -= 1
                     if depth == 0:
-                        results.append(s[start:i + 1])
+                        results.append((s[start:i + 1], start, i + 1))
                         i += 1
                         break
                 i += 1
@@ -79,23 +79,50 @@ def parse_llm_answer(response: str) -> list:
     """
     Extract the answer from the model's response and convert it to a list.
 
-    Handles three output patterns:
-      [2.5, -1]          → [2.5, -1]       flat list (ideal)
-      [[-3], [-2], [0]]  → [-3, -2, 0]     nested single-value lists
-      [2.5]\\n[-1]        → [2.5, -1]       one bracket per line
+    Handles these output patterns:
+      [2.5, -1]          → [2.5, -1]   flat list (ideal)
+      [[-3], [-2], [0]]  → [-3, -2, 0] nested single-value lists
+      [2.5]\\n[-1]        → [2.5, -1]   consecutive single-value brackets
+
+    Label patterns like [0]: are filtered. When there are multiple groups of
+    consecutive single-value brackets separated by blank lines, only the last
+    group is used.
     """
-    exprs = _all_bracket_exprs(response)
-    if not exprs:
+    raw = _all_bracket_exprs(response)
+    if not raw:
         raise ValueError(f"No answer found in response: {response}")
 
-    parsed = [ast.literal_eval(_quote_bare_words(e)) for e in exprs]
+    # Filter out label patterns: [n]: (index labels echoed from the question)
+    filtered = [(expr, start, end) for expr, start, end in raw
+                if end >= len(response) or response[end] != ':']
+    if not filtered:
+        filtered = raw  # nothing survived the filter, fall back
 
-    # Multiple single-value lists → model answered one per line or nested
-    if len(parsed) > 1 and all(isinstance(x, list) and len(x) == 1 for x in parsed):
-        return [x[0] for x in parsed]
+    parsed = [(ast.literal_eval(_quote_bare_words(expr)), start, end)
+              for expr, start, end in filtered]
 
-    # Single expression (normal case)
-    result = parsed[-1]
+    # Group consecutive single-value brackets — blank line breaks the group
+    def is_single(val):
+        return isinstance(val, list) and len(val) == 1
+
+    if len(parsed) > 1 and all(is_single(v) for v, _, _ in parsed):
+        groups = []
+        group = [parsed[0]]
+        for i in range(1, len(parsed)):
+            _, prev_end = group[-1][1], group[-1][2]
+            _, cur_start, _ = parsed[i]
+            between = response[prev_end:cur_start]
+            if re.search(r'\n\s*\n', between):
+                groups.append(group)
+                group = [parsed[i]]
+            else:
+                group.append(parsed[i])
+        groups.append(group)
+        last_group = groups[-1]
+        return [v[0] for v, _, _ in last_group]
+
+    # Single expression or multi-value list (normal case)
+    result = parsed[-1][0]
     if not isinstance(result, list):
         result = [result]
     # Flatten [[a], [b], [c]] → [a, b, c]
