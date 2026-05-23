@@ -53,6 +53,10 @@ def _quote_bare_words(expr: str) -> str:
         expr
     )
 
+def _quote_fractions(expr: str) -> str:
+    """Quote unquoted a/b fraction tokens so ast.literal_eval treats them as strings, e.g. [86/27] → ["86/27"]."""
+    return re.sub(r'(?<!["\w])(-?\d+/\d+)(?!["\w])', lambda m: f'"{m.group()}"', expr)
+
 def _all_bracket_exprs(s: str) -> list:
     """Return all top-level balanced [...] expressions as (expr, start, end) tuples."""
     results = []
@@ -99,6 +103,8 @@ def parse_llm_answer(response: str) -> list:
                     return val
             except (ValueError, SyntaxError):
                 pass
+        if re.match(r'^-?\d+/\d+$', content):
+            return [content]
         try:
             val = ast.literal_eval(content)
             return [val] if not isinstance(val, list) else val
@@ -115,7 +121,7 @@ def parse_llm_answer(response: str) -> list:
     if not filtered:
         filtered = raw  # nothing survived the filter, fall back
 
-    parsed = [(ast.literal_eval(_quote_bare_words(expr)), start, end)
+    parsed = [(ast.literal_eval(_quote_bare_words(_quote_fractions(expr))), start, end)
               for expr, start, end in filtered]
 
     # Group consecutive single-value brackets — blank line breaks the group

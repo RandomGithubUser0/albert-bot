@@ -76,6 +76,9 @@ class Parser:
         return content
 
     def parse_fitb(self):
+        finish_prompt = self.page.query_selector(queries.FINISH_BUTTON)
+        if finish_prompt:
+            finish_prompt.click()
         content = [build_text_block("|| Math problem: ||")]
         self.append_parsed_question(content)
         para_blocks = [
