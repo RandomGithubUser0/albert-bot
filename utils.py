@@ -144,8 +144,10 @@ def parse_llm_answer(response: str) -> list:
         last_group = groups[-1]
         return [v[0] for v, _, _ in last_group]
 
-    # Single expression or multi-value list (normal case)
-    result = parsed[-1][0]
+    # Prefer the last multi-value list so stray single-value brackets that appear
+    # after the answer (e.g. restated individual choices) don't override it.
+    multi = [v for v, _, _ in parsed if isinstance(v, list) and len(v) > 1]
+    result = multi[-1] if multi else parsed[-1][0]
     if not isinstance(result, list):
         result = [result]
     # Flatten [[a], [b], [c]] → [a, b, c]
