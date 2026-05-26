@@ -8,16 +8,7 @@ load_dotenv()
 # URLS
 
 TEXT = """
-https://www.albert.io/adaptive/skill/95356190-e483-4f2b-8004-d213724b232c 
-https://www.albert.io/adaptive/skill/8a34b30c-e5e0-4955-89e8-ed6802dda7e5 
-https://www.albert.io/adaptive/skill/8b61d82e-3aca-4d19-af97-a2c8891b64a1 
-https://www.albert.io/adaptive/skill/1ecbdae9-2cad-4de3-9641-4ba692011158 
-https://www.albert.io/adaptive/skill/53add8d0-a379-42ca-98a9-d01c28f7836a 
-
-https://www.albert.io/adaptive/skill/2a67d379-88e3-448a-bce9-4e9ff95fd01c
-https://www.albert.io/adaptive/skill/75214c4b-ac58-43fb-a67f-e00fe93eb4b0
-https://www.albert.io/adaptive/skill/f9aa0f56-d960-4d66-8a0b-3445dd6ba2a3 
-
+https://www.albert.io/adaptive/skill/84ec9e12-c4b0-460d-835b-2595b3dafc24
 """
 URLS = [line.strip() for line in TEXT.splitlines() if line.strip()]
 
@@ -37,6 +28,7 @@ SOLVER_MODELS = {
 SYSTEM_PROMPT_STUD = """You are a math problem solver. You will be given a math question and must answer it correctly.
 Always wrap your final answer in square brackets []. Example: [2] 
 Try to keep additional sentences minimal, but if it helps you, feel free to show steps. 
+Use square brackets ONLY for the final answer, no where else. 
 """
 
 SYSTEM_PROMPTS = {

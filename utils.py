@@ -58,24 +58,32 @@ def _quote_fractions(expr: str) -> str:
     return re.sub(r'(?<!["\w])(-?\d+/\d+)(?!["\w])', lambda m: f'"{m.group()}"', expr)
 
 def _all_bracket_exprs(s: str) -> list:
-    """Return all top-level balanced [...] expressions as (expr, start, end) tuples."""
+    """Return all top-level balanced [...] Python-literal expressions as (expr, start, end) tuples.
+    Brackets containing ) or \\ at depth 1 are math interval/LaTeX notation and are skipped,
+    rewinding so later real answer brackets can still be found."""
     results = []
     i = 0
     while i < len(s):
-        if s[i] == '[':
-            depth = 0
-            start = i
-            while i < len(s):
-                if s[i] == '[':
-                    depth += 1
-                elif s[i] == ']':
-                    depth -= 1
-                    if depth == 0:
-                        results.append((s[start:i + 1], start, i + 1))
-                        i += 1
-                        break
-                i += 1
-        else:
+        if s[i] != '[':
+            i += 1
+            continue
+        depth = 0
+        start = i
+        while i < len(s):
+            c = s[i]
+            if c == '[':
+                depth += 1
+            elif c == ']':
+                depth -= 1
+                if depth == 0:
+                    results.append((s[start:i + 1], start, i + 1))
+                    i += 1
+                    break
+            elif depth == 1 and c in (')', '\\'):
+                # Math interval [a, b) or LaTeX [a, \infty) — not a Python list.
+                # Rewind to start+1 so the outer loop can still find later brackets.
+                i = start + 1
+                break
             i += 1
     return results
 
